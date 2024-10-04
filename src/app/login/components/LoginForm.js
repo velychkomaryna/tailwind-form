@@ -3,9 +3,12 @@
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useMutation } from 'react-query'; 
-import { FormikTextInput, FormikErrors, createHandleSubmit } from "@/components/FormikFields"
+import { FormikTextInput, FormikErrors, createHandleSubmit } from "@/components/FormikFields";
+import { useDispatch } from 'react-redux';
+import { useRouter } from "next/navigation";
+import { setUserData } from  '@/features/user/userSlice';
 import { ButtonSubmit, Button } from '@/components/Button';
-import { login, USER_KEY } from "@/app/api.js";
+import { login } from "@/app/api";
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Wrong email").required("Required"),
@@ -13,14 +16,16 @@ const LoginSchema = Yup.object().shape({
   });
 
 export default function LoginForm() {
+    const dispatch = useDispatch();
     const mutation = useMutation(login)
+    const router = useRouter();
 
     async function handleSubmit(values, formikHelpers) {
         const handle = createHandleSubmit({
           mutation,
-          onSuccess: (user) => {
-            localStorage.setItem(USER_KEY, user.email);
-            alert("Login successful")
+          onSuccess: (data) => {
+            dispatch(setUserData(data.user));
+            router.push("/profile");
           },
         });
         handle(values, formikHelpers);
@@ -42,7 +47,7 @@ export default function LoginForm() {
             </div>
 
             <div className="mt-4">
-                <Button> Request Access </Button>
+                <Button fullWidth> Request Access </Button>
             </div>
             </Form>
           </Formik>

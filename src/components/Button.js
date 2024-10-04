@@ -12,11 +12,11 @@ export function ButtonSubmit ({ children, ...props }) {
     );
   };
 
-export function Button ({ children, ...props }) {
+export function Button ({ children, fullWidth = false, ...props }) {
     return (
      <button
         type="button"
-        className="w-full bg-white text-emerald-500 py-2 rounded-md border border-emerald-500 hover:bg-emerald-100"
+        className={`bg-white text-emerald-500 p-2 rounded-md border border-emerald-500 hover:bg-emerald-100 ${ fullWidth ? 'w-full' : ''}`}
         {...props}
         >
           {children}

@@ -1,9 +1,12 @@
 import axios from "axios";
-
+import { clearUserData } from '@/features/user/userSlice';
+import { store } from './store';
 
 export const USER_KEY = "user"
 const LOGIN_PATH = "/dj-rest-auth/login";
 const RESET_TOKEN_PATH = "/dj-rest-auth/token/refresh";
+const LOGOUT_PATH = "/dj-rest-auth/logout"
+const PRIVATE_PATH = "/private";
 
 
 const client = axios.create({
@@ -23,7 +26,7 @@ client.interceptors.response.use(
                 return client(originalRequest);
             } catch (err) {
                 // move to login
-                localStorage.removeItem(USER_KEY);
+                store.dispatch(clearUserData()); // cannot use hook
                 window.location.href = '/login';
             }
             }
@@ -43,4 +46,16 @@ client.interceptors.response.use(
     const newAccessToken = response.data.access; 
     
     return newAccessToken;
+  }
+
+  export async function logout() {
+    const url = `${LOGOUT_PATH}/`;
+    const response = await client.post(url);
+    return response.data;
+  }
+
+  export async function privatePage() {
+    const url = `${PRIVATE_PATH}/`;
+    const response = await client.get(url);
+    return response.data
   }
