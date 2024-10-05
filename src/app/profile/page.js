@@ -1,17 +1,20 @@
 "use client"
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button } from '@/components/Button';
 import { useMutation } from "react-query";
 import { useRouter } from "next/navigation";
+import { clearUserData, selectUserData } from  '@/features/user/userSlice';
+
 import { logout } from "@/app/api";
 
 const UserProfile = () => {
     const router = useRouter();
-    const userData = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const userData = useSelector(selectUserData);
     const mutation = useMutation(logout, {
         onSuccess: () => {
-            router.push("/login");
+            dispatch(clearUserData());
         },
         onError: (error) => {
             console.error('Error!', error.message);
@@ -20,7 +23,7 @@ const UserProfile = () => {
     );
     return (
     <div className="m-8">
-    {(userData.email) ? (
+    {(userData) ? (
         <h2 className="text-xl font-bold mb-4"> User Email: {userData.email} </h2>
     ) :
     (

@@ -34,7 +34,7 @@ client.interceptors.response.use(
     }
 );
 
-    export async function login(data) {
+  export async function login(data) {
     const url = `${LOGIN_PATH}/`;
     const response = await client.post(url, data);
     return response.data;

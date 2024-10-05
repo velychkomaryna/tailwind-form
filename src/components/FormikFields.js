@@ -25,11 +25,11 @@ export function getFormAndFieldErrors(error) {
     } else return { formErrors: [genericError] };
 }
 
-export function createHandleSubmit({ mutation, onSuccess = () => {}, throwError = false }) {
+export function createHandleSubmit({ asyncFunc, onSuccess = () => {}, throwError = false }) {
     return async function handleSubmit(values, { setErrors, setStatus }) {
       setStatus(null);
       try {
-        const data = await mutation.mutateAsync(values);
+        const data = await asyncFunc(values);
         onSuccess(data);
       } catch (error) {
         const { fieldErrors, formErrors } = getFormAndFieldErrors(error);

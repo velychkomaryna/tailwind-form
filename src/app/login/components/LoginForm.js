@@ -2,13 +2,12 @@
 
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useMutation } from 'react-query'; 
+import { useSelector } from 'react-redux';
 import { FormikTextInput, FormikErrors, createHandleSubmit } from "@/components/FormikFields";
 import { useDispatch } from 'react-redux';
 import { useRouter } from "next/navigation";
-import { setUserData } from  '@/features/user/userSlice';
+import { loginUser, selectLoading } from  '@/features/user/userSlice';
 import { ButtonSubmit, Button } from '@/components/Button';
-import { login } from "@/app/api";
 
 const LoginSchema = Yup.object().shape({
     email: Yup.string().email("Wrong email").required("Required"),
@@ -17,19 +16,17 @@ const LoginSchema = Yup.object().shape({
 
 export default function LoginForm() {
     const dispatch = useDispatch();
-    const mutation = useMutation(login)
+    const loading = useSelector(selectLoading);
     const router = useRouter();
 
     async function handleSubmit(values, formikHelpers) {
-        const handle = createHandleSubmit({
-          mutation,
-          onSuccess: (data) => {
-            dispatch(setUserData(data.user));
-            router.push("/profile");
-          },
-        });
-        handle(values, formikHelpers);
-      }
+      const handle = createHandleSubmit({
+        asyncFunc: async (values) => dispatch(loginUser(values)),
+        onSuccess: () => router.push("/profile")
+      });
+      
+      handle(values, formikHelpers);  // Call the created handle function
+    };
 
     return (
         <div className="bg-white p-12 rounded-lg shadow-md w-full max-w-md border border-gray-300">
@@ -43,7 +40,9 @@ export default function LoginForm() {
             <FormikTextInput placeholder="Password" name="password" type="password" />
             <FormikErrors className="mt-2"/>
             <div className="mt-6">
-                <ButtonSubmit> Sign In </ButtonSubmit>
+                <ButtonSubmit disabled={loading}>
+                  {loading ? "Signing In..." : "Sign In"}
+                </ButtonSubmit>
             </div>
 
             <div className="mt-4">
