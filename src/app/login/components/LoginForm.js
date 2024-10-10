@@ -2,11 +2,9 @@
 
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { useSelector } from 'react-redux';
 import { FormikTextInput, FormikErrors, createHandleSubmit } from "@/components/FormikFields";
-import { useDispatch } from 'react-redux';
 import { useRouter } from "next/navigation";
-import { loginUser, selectLoading } from  '@/features/user/userSlice';
+import { useLoginUserMutation } from '@/lib/features/api/apiSlice';
 import { ButtonSubmit, Button } from '@/components/Button';
 
 const LoginSchema = Yup.object().shape({
@@ -15,13 +13,12 @@ const LoginSchema = Yup.object().shape({
   });
 
 export default function LoginForm() {
-    const dispatch = useDispatch();
-    const loading = useSelector(selectLoading);
+    const [loginUser, { isLoading, error }] = useLoginUserMutation();
     const router = useRouter();
 
     async function handleSubmit(values, formikHelpers) {
       const handle = createHandleSubmit({
-        asyncFunc: async (values) => dispatch(loginUser(values)),
+        asyncFunc: async (values) => loginUser(values).unwrap(),
         onSuccess: () => router.push("/profile")
       });
       
@@ -40,8 +37,8 @@ export default function LoginForm() {
             <FormikTextInput placeholder="Password" name="password" type="password" />
             <FormikErrors className="mt-2"/>
             <div className="mt-6">
-                <ButtonSubmit disabled={loading}>
-                  {loading ? "Signing In..." : "Sign In"}
+                <ButtonSubmit disabled={isLoading}>
+                  {isLoading ? "Signing In..." : "Sign In"}
                 </ButtonSubmit>
             </div>
 

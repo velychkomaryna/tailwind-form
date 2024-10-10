@@ -4,9 +4,8 @@ import { useField, useFormikContext } from "formik";
 import _ from "lodash";
 
 export function getErrors(error) {
-    if (error?.response?.status === 400) {
-      let { nonFieldErrors, ...fieldErrors } = error?.response?.data;
-
+    if (error?.status === 400) {
+      let { nonFieldErrors, ...fieldErrors } = error?.data;
       if (_.isEmpty(fieldErrors)) fieldErrors = undefined;
       return { fieldErrors, nonFieldErrors };
     } else {
@@ -36,7 +35,7 @@ export function createHandleSubmit({ asyncFunc, onSuccess = () => {}, throwError
         
         setErrors(fieldErrors);
         setStatus({ formErrors });
-        if (throwError) throw error;
+        if (throwError) throw error.data;
       }
     };
 }

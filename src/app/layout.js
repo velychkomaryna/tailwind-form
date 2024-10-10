@@ -1,27 +1,16 @@
 "use client";
-
-import { QueryClient, QueryClientProvider } from "react-query";
-import { store } from './store'
-import { Provider } from 'react-redux'
 import "./globals.css";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 300,
-    },
-  },
-});
+import { Provider } from 'react-redux';
+import { store } from '@/lib/store'
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
-            {children}
-          </Provider>
-        </QueryClientProvider>
+        <Provider store={store}>
+          {children}
+        </Provider>
       </body>
     </html>
   );
